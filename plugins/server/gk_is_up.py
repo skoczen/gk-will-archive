@@ -1,11 +1,10 @@
 import requests
 import time
 
-from plugins.server.mixins import MailgunMixin
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
 
-class UptimePlugin(MailgunMixin, WillPlugin):
+class UptimePlugin(WillPlugin):
 
     def _verify_url(self, url):
         try:
@@ -18,11 +17,11 @@ class UptimePlugin(MailgunMixin, WillPlugin):
 
                 if r.status_code == 500:
                     on_fire_list = self.load("on_fire_list", [])
-                    self._send_email(
-                        "ERROR <errors@scrapbin.com>",
-                        on_fire_list,
-                        "Website 500 error - %s" % url,
-                        "%s is down!" % url
+                    self.send_email(
+                        from_email="ERROR <errors@scrapbin.com>",
+                        email_list=on_fire_list,
+                        subject="Website 500 error - %s" % url,
+                        message="%s is down!" % url
                     )
         except:
             pass
@@ -61,11 +60,11 @@ class UptimePlugin(MailgunMixin, WillPlugin):
     def test_on_fire_emails(self, message):
         on_fire_list = self.load("on_fire_list", [])
 
-        self._send_email(
-            "ERROR <errors@scrapbin.com>",
-            on_fire_list,
-            "Website 500 error -- just kidding!",
-            "Everything is fine :)"
+        self.send_email(
+            from_email="TEST ERROR <errors@scrapbin.com>",
+            email_list=on_fire_list,
+            subject="Test Website 500 error -- just kidding!",
+            message="Everything is fine :)"
         )
 
         self.say("Sent out the test email", message=message)
