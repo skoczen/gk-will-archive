@@ -1,11 +1,11 @@
-import datetime
 import requests
 import time
+
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
 
 class UptimePlugin(WillPlugin):
-    
+
     def _verify_url(self, url):
         try:
             r = requests.get(url)
@@ -14,6 +14,15 @@ class UptimePlugin(WillPlugin):
                 r = requests.get(url)
                 if not r.status_code == 200:
                     self.say("@all WARNING: %s is down! (%s code)" % (url, r.status_code), color="red")
+
+                if r.status_code == 500:
+                    on_fire_list = self.load("on_fire_list", [])
+                    self.send_email(
+                        from_email="ERROR <errors@scrapbin.com>",
+                        email_list=on_fire_list,
+                        subject="Website 500 error - %s" % url,
+                        message="%s is down!" % url
+                    )
         except:
             pass
 
@@ -24,3 +33,38 @@ class UptimePlugin(WillPlugin):
     @periodic(second='5')
     def sb_is_up(self):
         self._verify_url("https://www.scrapbin.com")
+
+    @respond_to("^add (?P<email>.*) to on fire list", multiline=True)
+    def add_to_fire_list(self, message, email=""):
+        on_fire_list = self.load("on_fire_list", [])
+        on_fire_list.append(email)
+
+        self.save("on_fire_list", on_fire_list)
+        self.say("Got it, added %s to on fire list" % email, message=message)
+
+    @respond_to("^on fire list", multiline=True)
+    def get_fire_list(self, message):
+        on_fire_list = self.load("on_fire_list", [])
+        fire_list_html = rendered_template("fire_list.html", {"fire_list": on_fire_list})
+        self.say(fire_list_html, message=message, html=True)
+
+    @respond_to("^remove (?P<email>.*) from on fire list", multiline=True)
+    def remove_from_fire_list(self, message, email=""):
+        on_fire_list = self.load("on_fire_list", [])
+        on_fire_list.remove(email)
+
+        self.save("on_fire_list", on_fire_list)
+        self.say("Got it, removed %s from on fire list" % email, message=message)
+
+    @respond_to("^send test email to on fire list", multiline=True)
+    def test_on_fire_emails(self, message):
+        on_fire_list = self.load("on_fire_list", [])
+
+        self.send_email(
+            from_email="TEST ERROR <errors@scrapbin.com>",
+            email_list=on_fire_list,
+            subject="Test Website 500 error -- just kidding!",
+            message="Everything is fine :)"
+        )
+
+        self.say("Sent out the test email", message=message)
