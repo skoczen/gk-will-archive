@@ -3,8 +3,8 @@ from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
 
 
-class HelloPlugin(WillPlugin):
+class PingPlugin(WillPlugin):
 
-    @respond_to("^hello$")
-    def hello(self, message):
-        self.reply(message, "hi!")
+    @respond_to("^ping$")
+    def ping(self, message):
+        self.reply(message, "PONG")
