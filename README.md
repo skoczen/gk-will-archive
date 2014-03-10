@@ -44,3 +44,9 @@ export WILL_AWS_ACCESS_KEY_ID=''
 export WILL_AWS_SECRET_ACCESS_KEY=''
 export WILL_AWS_DEV_BUCKET_NAME=''
 ```
+
+And optionally
+
+```
+export WILL_ZOOM_URL='https://zoom.us/j/1234567890'
+```
