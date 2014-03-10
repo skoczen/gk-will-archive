@@ -1,19 +1,5 @@
-"""
-Add people to list with their "personal zoom" urls seen on the profile page after login
-When someone requests @will zoom, it grabs their personal url (if it exists)
-They have to join the zoom first before others can
-
-Levi's zoom room: https://zoom.us/j/5760057307
-
-@will my zoom is https://zoom.us/j/5760057307
-@will what is my zoom
-@will zoom
-"""
-import requests
-import time
-
 from will.plugin import WillPlugin
-from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
+from will.decorators import respond_to
 
 class ZoomPlugin(WillPlugin):
 
