@@ -4,7 +4,7 @@ from will import settings
 
 class MonthlyGoalsPlugin(WillPlugin):
 
-    @respond_to("Set monthly goals to (?P<goals>.*)", multiline=True)
+    @respond_to("Set (?:the )?monthly goals to (?P<goals>.*)", multiline=True)
     def set_goals(self, message, goals=""):
         print "goals: %s" % goals
         self.save("monthly_goals", goals)
