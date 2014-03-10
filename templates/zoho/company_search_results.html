@@ -1,0 +1,19 @@
+{% if results %}
+    {% if truncated %}
+    <b>Here are the top 20 results:</b><br>
+    <a href="https://crm.zoho.com/crm/GlobalSearch1.do?sModules=Accounts&searchword={{ account }}">See all</a>
+    {% else %}
+    <b>We've got {{ count }} {{ account }}'s:</b>
+    {% endif %}
+    <ol>
+        {% for result in results %}
+        <li>{{ result }}</li>
+        {% endfor %}
+    </ol>
+
+    {% if truncated %}
+
+    {% endif %}
+{% else %}
+Doesn't appear we have any accounts containing "{{ account }}".
+{% endif %}
