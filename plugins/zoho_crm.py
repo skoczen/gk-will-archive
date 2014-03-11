@@ -47,7 +47,6 @@ class ZohoCRMPlugin(WillPlugin):
         if search is None:
             search = dict(module='Accounts', query=account)
 
-        print "Search: %s" % search
         results_html = rendered_template("zoho_search_results.html", search)
 
         self.say(results_html, html=True)
