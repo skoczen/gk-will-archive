@@ -58,14 +58,10 @@ class ZohoCRMPlugin(WillPlugin):
 
         search = self.get_search_records('Contacts', 'Contacts(First Name)', contact)
 
-        context = {
-            "module": 'Accounts',
-            "query": contact
-        }
+        if search is None:
+            search = dict(module='Accounts', query=account)
 
-        context += search
-
-        results_html = rendered_template("zoho_search_results.html", context)
+        results_html = rendered_template("zoho_search_results.html", search)
 
         self.say(results_html, html=True)
 
