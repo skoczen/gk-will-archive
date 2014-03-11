@@ -1,0 +1,21 @@
+{% if results %}
+    {% if count >= 20 %}
+    <b>Here are the top 20:</b><br>
+    {% else %}
+    <b>We've got {{ count }} {{ query }}{% if count > 1 %}'s{% endif %}:</b>
+    {% endif %}
+    <ol>
+        {% for result in results %}
+        <li>{{ result }}</li>
+        {% endfor %}
+    </ol>
+
+    {% if count >= 20 %}
+    <br>
+    <ul style="list-style: none">
+        <li><b><a href="https://crm.zoho.com/crm/GlobalSearch1.do?sModules=Accounts&searchword={{ account }}">See all</a></b></li>
+    </ul>
+    {% endif %}
+{% else %}
+Doesn't appear we have any {{ module }} matching "{{ query }}".
+{% endif %}

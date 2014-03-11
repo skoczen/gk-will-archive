@@ -1,137 +1,125 @@
 import requests, json
-from will import settings
+from will.settings import WILL_ZOHO_CRM_TOKEN
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
+from string import split, join
 
 
 class ZohoCRMPlugin(WillPlugin):
 
-    @respond_to("^zoho company$")
-    def add_company(self, message):
-        company_name = "ABC Company"
-        phone = "123-456-7809"
+    @staticmethod
+    def get_first_name(full_name):
+        names = split(full_name, ' ')
+        first_name = names[0]
 
-        url = "https://crm.zoho.com/crm/private/json/Accounts/insertRecords"
-        params = {
-            'authtoken': settings.WILL_ZOHO_CRM_TOKEN,
-            'scope': 'crmapi',
-            'newFormat': 1,
-            'xmlData': '<Accounts><row no="1"><FL val="Account Name">%s</FL><FL val="phone">%s</FL></row></Accounts>'
-                       % (company_name, phone)
+        return first_name
+
+    @staticmethod
+    def get_last_name(full_name):
+        names = split(full_name, ' ')
+        last_name = names[len(names)-1]
+
+        return last_name
+
+    @route("/create-zoho-lead/")
+    def create_lead(self):
+        full_name = "Levi C. Thomason"
+        phone = "2086994042"
+        email = "me@levithomason.com"
+        business_name = "Thomason Industries"
+
+        first_name = self.get_first_name(full_name)
+        last_name = self.get_last_name(full_name)
+
+        lead = {
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Phone": phone,
+            "Email": email,
+            "Company": business_name
         }
 
-        r = requests.get(url, params=params)
+    @respond_to("^search zoho (companies|businesses|accounts) for (?P<account>.*)")
+    def search_account(self, message, account):
 
-        if r.status_code == requests.codes.ok:
-            self.reply(message, 'I added "%s" to Zoho CRM.' % company_name)
+        search = self.get_search_records('Accounts', 'Accounts(Account Name)', account)
 
-        self.reply(message, "Here's what I heard back: \n\n %s" % r.text)
+        if search is None:
+            search = dict(module='Accounts', query=account)
 
-    @respond_to("^zoho contact$")
-    def add_contact(self, message):
-        first_name = "Aaaaa"
-        last_name = "Bbbbbbbb"
-        phone = "123-456-7809"
-        email = "test@test.com"
-        company_name = "ABC Company"
+        print "Search: %s" % search
+        results_html = rendered_template("zoho_search_results.html", search)
 
-        self.reply(message, "%s, %s, %s, %s, %s" % (first_name, last_name, phone, email, company_name))
+        self.say(results_html, html=True)
 
-    @route("/find-zoho-account/")
-    @respond_to("^(find|search|look|lookup|look up|list|ls) (zoho|zoho for) (company|companies for|business|businesses for|account|accounts for) (?P<account>.*)")
-    def find_account(self, message, account):
+        return search
 
-        self.say('/me goes looking for "%s"...' % account, message=message)
+    @respond_to("^search zoho contacts for (?P<contact>.*)")
+    def search_contact(self, message, contact):
 
-        url = "https://crm.zoho.com/crm/private/json/Accounts/getSearchRecords"
+        search = self.get_search_records('Contacts', 'Contacts(First Name)', contact)
+
+        context = {
+            "module": 'Accounts',
+            "query": contact
+        }
+
+        context += search
+
+        results_html = rendered_template("zoho_search_results.html", context)
+
+        self.say(results_html, html=True)
+
+        return search
+
+    def get_search_records(self, module, select_columns, query):
+        url = "https://crm.zoho.com/crm/private/json/%s/getSearchRecords" % module
+
+        if module == 'Accounts':
+            search_condition = "(Account Name|contains|*%s*)" % query
+
+        if module == 'Contacts':
+            if len(split(query, ' ')) > 1:
+                first_name = self.get_first_name(query)
+                search_condition = "(First Name|contains|*%s*)" % first_name
+            else:
+                search_condition = "(First Name|contains|*%s*)" % query
+
         params = {
-            'authtoken': settings.WILL_ZOHO_CRM_TOKEN,
+            'authtoken': WILL_ZOHO_CRM_TOKEN,
             'scope': 'crmapi',
             'newFormat': 1,
-            'selectColumns': 'Accounts(Account Name)',
-            'searchCondition': '(Account Name|contains|*%s*)' % account,
+            'selectColumns': select_columns,
+            'searchCondition': search_condition,
         }
 
         request = requests.get(url, params=params)
         response_json = json.loads(request.text)
         response = response_json['response']
 
-        results = []
+        if response.get('nodata', None) is not None:
+            return None
 
-        try:
-            self.say("Response is: " + str(type(response['result']['Accounts']['row'])))
+        else:
+            try:
+                response_results = response['result'][module]['row']
 
-            for row in response['result']['Accounts']['row']:
-                account_name = row['FL'][1]['content']
-                results.append("%s" % account_name)
+                results = []
+                if isinstance(response_results, list):
+                    for row in response_results:
+                        account_name = row['FL'][1]['content']
+                        results.append("%s" % account_name)
 
-        except KeyError:
-            pass
+                elif isinstance(response_results, dict):
+                    account_name = response_results['FL'][1]['content']
+                    results.append("%s" % account_name)
 
-        truncated = len(results) >= 20
-        count = len(results)
+                search = {
+                    "results": results,
+                    "count": len(results)
+                }
 
-        context = {
-            "account": account,
-            "results": results,
-            "count": count,
-            "truncated": truncated,
-        }
+                return search
 
-        results_html = rendered_template("zoho/company_search_results.html", context)
-
-        self.say(results_html, html=True)
-
-        return results
-
-    @route("/find-zoho-contact/")
-    @respond_to("^(find|search|look|lookup|look up|list|ls) (zoho|zoho for) (contact|contacts for|contacts named) (?P<contact>.*)")
-    def find_contact(self, message, contact):
-        self.say('/me goes looking for "%s"...' % contact, message=message)
-
-        url = "https://crm.zoho.com/crm/private/json/Contacts/getSearchRecords"
-        params = {
-            'authtoken': settings.WILL_ZOHO_CRM_TOKEN,
-            'scope': 'crmapi',
-            'newFormat': 1,
-            'selectColumns': 'Contacts(Last Name)',
-            'searchCondition': '(Last Name|contains|*%s*)' % contact,
-        }
-
-        request = requests.get(url, params=params)
-        request_json = request.json()
-        response = request_json['response']
-
-        results = []
-
-        self.say(str(len(response['result']['Contacts']['row'])))
-        self.say(str(response))
-
-        try:
-            rows = []
-            for row in response['result']['Contacts']['row']:
-                rows.append(row)
-
-            for row in rows:
-                self.say(row['FL'])
-                contact_name = row['FL'][1]['content']
-                results.append("%s" % contact_name)
-
-        except KeyError:
-            pass
-
-        truncated = len(results) >= 20
-        count = len(results)
-
-        context = {
-            "contact": contact,
-            "results": results,
-            "count": count,
-            "truncated": truncated,
-        }
-
-        results_html = rendered_template("zoho/contact_search_results.html", context)
-
-        self.say(results_html, html=True)
-
-        return results
+            except KeyError:
+                self.say("I'm not sure how to handle this data structure:\n\n%s" % json.dumps(response))
