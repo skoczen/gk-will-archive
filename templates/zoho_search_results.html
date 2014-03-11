@@ -1,6 +1,6 @@
 {% if results %}
     {% if count >= 20 %}
-    <b>Here are the top 20:</b><br>
+    <b>Here are the top 20 {{ module }}:</b><br>
     {% else %}
     <b>We've got {{ count }} {{ query }}{% if count > 1 %}'s{% endif %}:</b>
     {% endif %}

@@ -2,7 +2,7 @@ import requests, json
 from will.settings import WILL_ZOHO_CRM_TOKEN
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
-from string import split, join
+from string import split, join, capitalize
 
 
 class ZohoCRMPlugin(WillPlugin):
@@ -39,46 +39,37 @@ class ZohoCRMPlugin(WillPlugin):
             "Company": business_name
         }
 
-    @respond_to("^search zoho (companies|businesses|accounts) for (?P<account>.*)")
-    def search_account(self, message, account):
+    @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
+    def search(self, message, module, query):
 
-        search = self.get_search_records('Accounts', 'Accounts(Account Name)', account)
-
-        if search is None:
-            search = dict(module='Accounts', query=account)
-
-        results_html = rendered_template("zoho_search_results.html", search)
-
-        self.say(results_html, html=True)
-
-        return search
-
-    @respond_to("^search zoho contacts for (?P<contact>.*)")
-    def search_contact(self, message, contact):
-
-        search = self.get_search_records('Contacts', 'Contacts(First Name)', contact)
-
-        if search is None:
-            search = dict(module='Accounts', query=account)
-
-        results_html = rendered_template("zoho_search_results.html", search)
-
-        self.say(results_html, html=True)
-
-        return search
-
-    def get_search_records(self, module, select_columns, query):
-        url = "https://crm.zoho.com/crm/private/json/%s/getSearchRecords" % module
-
-        if module == 'Accounts':
+        if module == 'companies':
+            module = 'Accounts'
+            select_columns = 'Accounts(Account Name)'
             search_condition = "(Account Name|contains|*%s*)" % query
 
-        if module == 'Contacts':
+        if module == 'contacts':
+            module = 'Contacts'
+            select_columns = 'Contacts(First Name)'
+
             if len(split(query, ' ')) > 1:
                 first_name = self.get_first_name(query)
                 search_condition = "(First Name|contains|*%s*)" % first_name
             else:
                 search_condition = "(First Name|contains|*%s*)" % query
+
+        search = self.get_search_records(module, select_columns, search_condition)
+
+        if search is None:
+            search = dict(module=module, query=query)
+
+        results_html = rendered_template("zoho_search_results.html", search)
+
+        self.say(results_html, html=True)
+
+        return search
+
+    def get_search_records(self, module, select_columns, search_condition):
+        url = "https://crm.zoho.com/crm/private/json/%s/getSearchRecords" % module
 
         params = {
             'authtoken': WILL_ZOHO_CRM_TOKEN,
@@ -92,7 +83,8 @@ class ZohoCRMPlugin(WillPlugin):
         response_json = json.loads(request.text)
         response = response_json['response']
 
-        if response.get('nodata', None) is not None:
+        nodata = response.get('nodata', None)
+        if nodata is not None:
             return None
 
         else:
