@@ -1,34 +1,39 @@
+import os
 import requests, json
+import xml.etree.ElementTree as ET
+from string import split, join, lower
 from will.settings import WILL_ZOHO_CRM_TOKEN
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
-from string import split, join, lower
 
 
 class ZohoCRMPlugin(WillPlugin):
     @route("/create-zoho-lead/")
     def create_lead(self):
-        full_name = self.request.query.full_name
-        phone = self.request.query.phone
-        email = self.request.query.email
-        business_name = self.request.query.business_name
-
-        # TODO: remove this! :)
-        full_name = "Levi C. Thomason"
-        phone = "2086994042"
-        email = "me@levithomason.com"
-        business_name = "Thomason Industries"
+        full_name = self.request.query.get('full_name', '')
+        phone = self.request.query.get('phone', '')
+        email = self.request.query.get('email', '')
+        business_name = self.request.query.get('business_name', '')
+        notes = self.request.query.get('notes', '')
 
         first_name = get_first_name(full_name)
         last_name = get_last_name(full_name)
 
-        lead = {
-            "First Name": first_name,
-            "Last Name": last_name,
-            "Phone": phone,
-            "Email": email,
-            "Company": business_name
-        }
+        leads = [
+            {
+                "First Name": first_name,
+                "Last Name": last_name,
+                "Phone": phone,
+                "Email": email,
+                "Company": business_name,
+                "Description": notes
+            }
+        ]
+
+        response = zoho_api_request(module='Leads', api_method='insertRecords', response_format='xml', records=leads)
+
+        if response:
+            self.say('I just added %s to Zoho CRM Leads.' % first_name)
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
     def search(self, message, module, query):
@@ -117,7 +122,8 @@ class ZohoCRMPlugin(WillPlugin):
 
         return results
 
-    def get_record_by_id(self, record_id, module, fields):
+    @staticmethod
+    def get_record_by_id(record_id, module, fields):
         '''
         Returns a list of dictionaries containing specified fields [{'label': value}, {'label': value}]
         '''
@@ -149,8 +155,9 @@ class ZohoCRMPlugin(WillPlugin):
             return record
 
 
-def zoho_api_request(module, api_method, query=None, record_id=None, fields=None):
-    url = "https://crm.zoho.com/crm/private/json/%s/%s" % (module, api_method)
+def zoho_api_request(module, api_method, response_format='json', query=None, record_id=None, fields=None, records=None,
+                     is_approval='True'):
+    url = "https://crm.zoho.com/crm/private/%s/%s/%s" % (response_format, module, api_method)
 
     params = {
         'authtoken': WILL_ZOHO_CRM_TOKEN,
@@ -170,9 +177,58 @@ def zoho_api_request(module, api_method, query=None, record_id=None, fields=None
             search_condition = '(%s|contains|*%s*)' % (fields[0], query)
             params['searchCondition'] = search_condition
 
+    if records:
+        xml_data = '<%s>' % module
+        record_row = 1
+
+        for record in records:
+            xml_data += '<row no="%s">' % record_row
+
+            for key in record:
+                xml_data += '<FL val="%s">%s</FL>' % (key, record[key])
+
+            xml_data += '</row>'
+            record_row += 1
+
+        xml_data += '</%s>' % module
+
+        params['xmlData'] = xml_data
+        params['isApproval'] = is_approval
+
     request = requests.get(url, params=params)
-    response_json = json.loads(request.text)
-    response = response_json['response']
+
+    if response_format is 'json':
+        response_json = json.loads(request.text)
+        response = response_json['response']
+
+    elif response_format is 'xml':
+        f = open('zoho_crm_api_xml_response.xml', 'wb')
+        f.write(request.content)
+        f_path = os.path.abspath(f.name)
+        f.close()
+
+        tree = ET.parse(f_path)
+        os.remove(f_path)
+
+        error_ele = tree.find('.//error')
+        if error_ele:
+            error_code = tree.find('.//error/code').text
+            error_message = tree.find('.//error/message').text
+
+            raise Exception("Zoho Error Code: %s - %s" % (error_code, error_message))
+        else:
+            response = {}
+            for record in tree.iterfind(".//recorddetail"):
+                returned_record = {}
+                for ele in record.iterfind(".//FL"):
+                    key = ele.attrib.get('val', None)
+                    val = ele.text
+
+                    returned_record[key] = val
+
+                response[returned_record['Id']] = returned_record
+    else:
+        raise Exception('"%s" is not a valid response_format.' % response_format)
 
     return response
 
