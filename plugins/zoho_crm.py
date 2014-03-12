@@ -9,6 +9,7 @@ from will.decorators import respond_to, periodic, hear, randomly, route, rendere
 
 class ZohoCRMPlugin(WillPlugin):
 
+    @classmethod
     def create_lead(self, full_name, phone, email, business_name, notes):
         first_name = get_first_name(full_name)
         last_name = get_last_name(full_name)
@@ -24,10 +25,7 @@ class ZohoCRMPlugin(WillPlugin):
 
         response = zoho_api_request(module='Leads', api_method='insertRecords', response_format='xml', records=[leads])
 
-        if response:
-            self.say('I just added %s to Zoho CRM Leads.' % first_name)
-        else:
-            self.say("Heads up, I couldn't add %s to Zoho CRM Leads." % first_name)
+        return response
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
     def search(self, message, module, query):

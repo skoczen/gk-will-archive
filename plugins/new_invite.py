@@ -1,6 +1,6 @@
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
-from plugins.zoho_crm import ZohoCRMPlugin
+from plugins.zoho_crm import ZohoCRMPlugin as ZohoClient
 
 
 class NewInvitePlugin(WillPlugin):
@@ -16,7 +16,11 @@ class NewInvitePlugin(WillPlugin):
         business_name = self.request.query.business_name
         notes = self.request.query.notes
 
-        crm = ZohoCRMPlugin()
-        crm.create_lead(full_name, phone, email, business_name, notes)
+        response = ZohoClient.create_lead(full_name, phone, email, business_name, notes)
+
+        if response:
+            self.say('I just added %s to Zoho CRM Leads.' % full_name)
+        else:
+            self.say("Heads up, I couldn't add %s to Zoho CRM Leads." % full_name)
 
         return ""
