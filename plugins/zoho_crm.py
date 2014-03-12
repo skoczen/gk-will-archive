@@ -65,9 +65,9 @@ class ZohoCRMPlugin(WillPlugin):
 
             for field in record:
                 for field_label in field:
-                    field_value = field[field_label]
 
                     if field_label not in ignore_fields:
+                        field_value = field[field_label]
                         record_fields.append(field_value)
 
                         if field_label == 'Last Name' and last_name is not None:
@@ -78,16 +78,16 @@ class ZohoCRMPlugin(WillPlugin):
                 result = join(record_fields, ', ')
                 results.append(result)
 
-        search = {
+        results_context = {
             'results': results,
             'module': module,
             'query': query,
             'count': len(results)
         }
-        results_html = rendered_template("zoho_search_results.html", search)
+        results_html = rendered_template("zoho_search_results.html", results_context)
         self.say(results_html, html=True)
 
-        return search
+        return results_context
 
     @staticmethod
     def get_search_records(module, fields, query):
@@ -226,14 +226,14 @@ def zoho_api_request(module, api_method, response_format='json', query=None, rec
 
 
 def get_first_name(full_name):
-    names = split(full_name, ' ')
+    names = full_name.split(' ')
     first_name = names[0]
 
     return first_name
 
 
 def get_last_name(full_name):
-    names = split(full_name, ' ')
+    names = full_name.split(' ')
     last_name = names[len(names) - 1]
 
     return last_name
