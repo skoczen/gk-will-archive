@@ -8,32 +8,26 @@ from will.decorators import respond_to, periodic, hear, randomly, route, rendere
 
 
 class ZohoCRMPlugin(WillPlugin):
-    @route("/create-zoho-lead/")
-    def create_lead(self):
-        full_name = self.request.query.get('full_name', '')
-        phone = self.request.query.get('phone', '')
-        email = self.request.query.get('email', '')
-        business_name = self.request.query.get('business_name', '')
-        notes = self.request.query.get('notes', '')
 
+    def create_lead(self, full_name, phone, email, business_name, notes):
         first_name = get_first_name(full_name)
         last_name = get_last_name(full_name)
 
-        leads = [
-            {
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Phone": phone,
-                "Email": email,
-                "Company": business_name,
-                "Description": notes
-            }
-        ]
+        leads = {
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Phone": phone,
+            "Email": email,
+            "Company": business_name,
+            "Description": notes
+        }
 
-        response = zoho_api_request(module='Leads', api_method='insertRecords', response_format='xml', records=leads)
+        response = zoho_api_request(module='Leads', api_method='insertRecords', response_format='xml', records=[leads])
 
         if response:
             self.say('I just added %s to Zoho CRM Leads.' % first_name)
+        else:
+            self.say("Heads up, I couldn't add %s to Zoho CRM Leads." % first_name)
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
     def search(self, message, module, query):

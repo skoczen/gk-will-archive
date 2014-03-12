@@ -1,6 +1,6 @@
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
-
+from zoho_crm import ZohoCRMPlugin
 
 class NewInvitePlugin(WillPlugin):
 
@@ -13,5 +13,9 @@ class NewInvitePlugin(WillPlugin):
         phone = self.request.query.phone
         email = self.request.query.email
         business_name = self.request.query.business_name
+        notes = self.request.query.notes
+
+        crm = ZohoCRMPlugin()
+        crm.create_lead(full_name, phone, email, business_name, notes)
 
         return ""
