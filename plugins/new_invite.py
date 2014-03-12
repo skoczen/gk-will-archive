@@ -2,6 +2,7 @@ from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
 from plugins.zoho_crm import ZohoCRMPlugin
 
+
 class NewInvitePlugin(WillPlugin):
 
     @route("/new-invite/")
