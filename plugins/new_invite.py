@@ -1,6 +1,6 @@
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
-from zoho_crm import ZohoCRMPlugin
+from plugins.zoho_crm import ZohoCRMPlugin
 
 class NewInvitePlugin(WillPlugin):
 
