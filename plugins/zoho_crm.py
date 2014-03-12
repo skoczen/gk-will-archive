@@ -150,7 +150,7 @@ class ZohoCRMPlugin(WillPlugin):
 
 
 def zoho_api_request(module, api_method, response_format='json', query=None, record_id=None, fields=None, records=None,
-                     is_approval='True'):
+                     is_approval='false'):
     url = "https://crm.zoho.com/crm/private/%s/%s/%s" % (response_format, module, api_method)
 
     params = {
