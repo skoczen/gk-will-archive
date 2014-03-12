@@ -194,13 +194,7 @@ def zoho_api_request(module, api_method, response_format='json', query=None, rec
         response = response_json['response']
 
     elif response_format is 'xml':
-        f = open('zoho_crm_api_xml_response.xml', 'wb')
-        f.write(request.content)
-        f_path = os.path.abspath(f.name)
-        f.close()
-
-        tree = ET.parse(f_path)
-        os.remove(f_path)
+        tree = ET.ElementTree(ET.fromstring(request.content))
 
         error_ele = tree.find('.//error')
         if error_ele:
