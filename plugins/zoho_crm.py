@@ -29,7 +29,7 @@ class ZohoCRMPlugin(WillPlugin):
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
     def search(self, message, module, query):
-        self.say("Alright, I'm on it...")
+        self.say(message, "Alright, I'm on it...")
 
         accounts_words = ['accounts', 'businesses', 'companies']
         contacts_words = ['contacts', 'people']
@@ -234,6 +234,6 @@ def get_first_name(full_name):
 
 def get_last_name(full_name):
     names = full_name.split(' ')
-    last_name = names[len(names) - 1]
+    last_name = names[1:]
 
     return last_name
