@@ -1,4 +1,3 @@
-import os
 import requests, json
 import xml.etree.ElementTree as ET
 from string import split, join, lower
