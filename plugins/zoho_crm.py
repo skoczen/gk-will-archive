@@ -28,7 +28,7 @@ class ZohoCRMPlugin(WillPlugin):
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
     def search(self, message, module, query):
-        self.say(message, "Alright, I'm on it...")
+        self.say("Alright, I'm on it...", message=message)
 
         accounts_words = ['accounts', 'businesses', 'companies']
         contacts_words = ['contacts', 'people']
@@ -49,7 +49,7 @@ class ZohoCRMPlugin(WillPlugin):
                 query = first_name
 
         else:
-            self.say("I don't know of any '%s' module in Zoho" % module)
+            self.say("I don't know of any '%s' module in Zoho" % module, message=message)
             return None
 
         record_ids = self.get_search_records(module, return_fields, query)
@@ -84,7 +84,7 @@ class ZohoCRMPlugin(WillPlugin):
             'count': len(results)
         }
         results_html = rendered_template("zoho_search_results.html", results_context)
-        self.say(results_html, html=True)
+        self.say(results_html, html=True, message=message)
 
         return results_context
 
