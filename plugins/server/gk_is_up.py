@@ -15,12 +15,11 @@ class UptimePlugin(WillPlugin):
                 if not r.status_code == 200:
                     self.say("@all WARNING: %s is down! (%s code)" % (url, r.status_code), color="red")
 
-                if r.status_code == 500:
                     on_fire_list = self.load("on_fire_list", [])
                     self.send_email(
                         from_email="ERROR <errors@scrapbin.com>",
                         email_list=on_fire_list,
-                        subject="Website 500 error - %s" % url,
+                        subject="Website %s error - %s" % (r.status_code, url),
                         message="%s is down!" % url
                     )
         except:
