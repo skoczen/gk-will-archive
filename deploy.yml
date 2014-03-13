@@ -21,5 +21,6 @@ heroku:
             - WILL_AWS_ACCESS_KEY_ID
             - WILL_AWS_SECRET_ACCESS_KEY
             - WILL_AWS_DEV_BUCKET_NAME
+            - WILL_ZOHO_CRM_TOKEN
     scale:
         web: 1
