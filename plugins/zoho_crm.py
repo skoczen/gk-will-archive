@@ -227,6 +227,6 @@ def get_first_name(full_name):
 
 def get_last_name(full_name):
     names = full_name.split(' ')
-    last_name = names[1:]
+    last_name = join(names[1:], ' ')
 
     return last_name
