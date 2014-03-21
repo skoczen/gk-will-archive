@@ -447,11 +447,12 @@ StrictHostKeyChecking no
         except:
             import traceback; traceback.print_exc();
             if creating:
-                self.destroy()
+                self.destroy(while_crashing=True)
             raise
 
-    def destroy(self):
-        self.save(self.stack.deploy_output_key, "")
+    def destroy(self, while_crashing=False):
+        if not while_crashing:
+            self.save(self.stack.deploy_output_key, "")
         try:
             app = self.heroku.apps[self.stack.url_name]
             code_dir = self.get_code_dir()
