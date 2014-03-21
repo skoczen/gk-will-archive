@@ -50,3 +50,13 @@ And optionally
 ```
 export WILL_ZOOM_URL='https://zoom.us/j/1234567890'
 ```
+
+
+### Errors running deploy?
+It's possible (maybe even likely) that heroku's `heroku` gem has been updated, but will's on an older version. Run:
+
+```bash
+bundle install
+```
+
+Then commit `gemfile.lock`, and push - hopefully will will be better!
