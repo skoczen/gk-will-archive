@@ -379,7 +379,9 @@ StrictHostKeyChecking no
                 creating = True
                 forked = False
                 if "fork" in self.stack.deploy_config["heroku"]:
-                    self.run_heroku_cli_command("fork -a %s %s" % (self.stack.deploy_config["heroku"]["fork"], self.stack.url_name))
+                    self.run_heroku_cli_command("fork -a %s %s --confirm %s" % 
+                        (self.stack.deploy_config["heroku"]["fork"], self.stack.url_name, self.stack.url_name,)
+                    )
                     self.add_to_saved_output("Forked to new app: %s" % self.stack.url_name)
                     self.app = self.heroku.apps[self.stack.url_name]
                     forked = True
