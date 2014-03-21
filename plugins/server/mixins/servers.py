@@ -193,7 +193,7 @@ StrictHostKeyChecking no
             if line:
                 if line[:len("Identity added: ")] != "Identity added: ":
                     output = "%s%s" % (output, line)
-                    self.save(self.stack.deploy_output_key, output)
+                    self.add_to_saved_output(output)
             time.sleep(1)
 
         try:
@@ -211,11 +211,11 @@ StrictHostKeyChecking no
             pass
 
         if changed:
-            self.save(self.stack.deploy_output_key, output)
+            self.add_to_saved_output(output)
 
         if p.returncode != 0:
             output = '%s\n\n======================\nError running %s' % (output, command)
-            self.save(self.stack.deploy_output_key, output)
+            self.add_to_saved_output(output)
             raise Exception("Error running %s" % command)
 
     def run_heroku_cli_command(self, command, app=None, stream_output=True, cwd=None):
