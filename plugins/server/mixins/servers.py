@@ -431,7 +431,8 @@ StrictHostKeyChecking no
                 for k, v in self.stack.deploy_config["heroku"]["config"].items():
                     self.add_to_saved_output(" - %s" % k)
                     if k not in cached_config or cached_config[k] != v:
-                        v = v.replace("$APP_NAME", self.stack.url_name)
+                        if type(v) == type(""):
+                            v = v.replace("$APP_NAME", self.stack.url_name)
                         self.app.config[k] = v
 
             # Cloned config
