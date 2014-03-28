@@ -32,7 +32,7 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
         branches_html = rendered_template("active_staging_stacks.html", context)
         self.say(branches_html, message=message, html=True)
     
-    @respond_to("^(?:new |create a?)(?:staging )?stack for (?P<branch_name>.*)")
+    @respond_to("^(deploy|(?:new |create a?)(?:staging )?stack for) (?P<branch_name>.*)")
     def create_stack(self, message, branch_name=None):
         if not branch_name:
             self.say("You didn't say which branch to stage.", message=message)
