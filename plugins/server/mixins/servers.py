@@ -50,7 +50,6 @@ BIGGEST_FISH_NAMES = [
     "atlantic torpedo",
 ]
 COLLABORATOR_EMAILS = [
-    "eric@greenkahuna.com",
     "levi@greenkahuna.com",
     "steven@greenkahuna.com",
     "will@greenkahuna.com",
