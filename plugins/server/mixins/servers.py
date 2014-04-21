@@ -418,13 +418,11 @@ StrictHostKeyChecking no
                     self.add_to_saved_output(" - %s" % addon)
                     if addon not in self.addons:
                         print addon
-                        try:
-                            self.run_heroku_cli_command("addons:add %s --confirm %s" % (addon, self.stack.url_name))
-                            self.addons.append(addon)
-                        except Exception, e:
-                            if "already installed" in e:
-                                self.run_heroku_cli_command("addons:remove %s --confirm %s" % (addon, self.stack.url_name))
-                                self.run_heroku_cli_command("addons:add %s --confirm %s" % (addon, self.stack.url_name))
+                        addon_add_str = addon
+                        for option in addon_add_str:
+                            addon_add_str = "%s %s" % option
+                        self.run_heroku_cli_command("addons:add %s --confirm %s" % (addon_add_str, self.stack.url_name))
+                        self.addons.append(addon)
 
                 for addon_name in self.addons:
                     if addon_name.split(" ")[0] not in self.stack.deploy_config["heroku"]["addons"]:
