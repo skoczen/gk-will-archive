@@ -420,7 +420,7 @@ StrictHostKeyChecking no
                         print addon
                         addon_add_str = addon
                         for option in addon_add_str:
-                            addon_add_str = "%s %s" % option
+                            addon_add_str = "%s %s" % (addon_add_str, option)
                         self.run_heroku_cli_command("addons:add %s --confirm %s" % (addon_add_str, self.stack.url_name))
                         self.addons.append(addon)
 
