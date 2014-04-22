@@ -418,9 +418,14 @@ StrictHostKeyChecking no
                     self.add_to_saved_output(" - %s" % addon)
                     if addon not in self.addons:
                         print addon
-                        addon_add_str = addon
-                        for option in addon_add_str:
-                            addon_add_str = "%s %s" % (addon_add_str, option)
+                        
+                        if type(addon) == type(""):
+                            addon_add_str = addon
+                        else:
+                            for addon_name, options_list in addon.items():
+                                addon_add_str = addon_name
+                                for option in options_list:
+                                    addon_add_str = "%s %s" % (addon_add_str, option)
                         self.run_heroku_cli_command("addons:add %s --confirm %s" % (addon_add_str, self.stack.url_name))
                         self.addons.append(addon)
 
