@@ -37,6 +37,10 @@ class UptimePlugin(WillPlugin):
     def skunkworks_are_up(self):
         self._verify_url("http://skunkworks.greenkahuna.com")
 
+    @periodic(second='5')
+    def correlationbot_is_up(self):
+        self._verify_url("http://correlationbot.com")
+
     @respond_to("^add (?P<email>.*) to the on fire list", multiline=True)
     def add_to_fire_list(self, message, email=""):
         on_fire_list = self.load("on_fire_list", [])
