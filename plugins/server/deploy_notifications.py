@@ -6,8 +6,10 @@ class DeployedPlugin(WillPlugin):
 
     @route("/api/circleci/deployed/")
     def say_listener(self):
+        print self.request
+        print self.request.json
         # Options: https://circleci.com/docs/api#build
-        assert "payload" in self.request.json
+        assert self.request.json and "payload" in self.request.json
         payload = self.request.json["payload"]
         print payload
         if ["branch"] in payload and payload["branch"] == "master":
