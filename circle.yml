@@ -2,6 +2,10 @@ test:
   override:
     - /home/ubuntu/our-will/scripts/test_run.sh
     # - nose test
+notify:
+  webhooks:
+    - url: http://will.greenkahuna.com/api/circleci/deployed/
+
 deployment:
   production:
     branch: master
