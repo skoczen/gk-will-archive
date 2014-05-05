@@ -12,3 +12,5 @@ class DeployedPlugin(WillPlugin):
         if ["branch"] in payload and payload["branch"] == "master":
             message = "%(project_name)s has been <a href='%(build_url)s'>deployed</a>. (%(subject)s)" % payload
             self.say(message, html=True)
+
+        return "OK"
