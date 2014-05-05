@@ -28,6 +28,7 @@ class ZohoCRMPlugin(WillPlugin):
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
     def search(self, message, module, query):
+        """search zoho ___ for ___: Look in zoho's ___ contact info for ___."""
         self.say("Alright, I'm on it...", message=message)
 
         accounts_words = ['accounts', 'businesses', 'companies']

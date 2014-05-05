@@ -6,6 +6,7 @@ class MonthlyGoalsPlugin(WillPlugin):
 
     @respond_to("Set (?:the )?monthly goals to (?P<goals>.*)", multiline=True)
     def set_goals(self, message, goals=""):
+        """set the monthly goals to ___: Set our monthly goals."""
         print "goals: %s" % goals
         self.save("monthly_goals", goals)
         self.say("Got it.", message=message)
@@ -15,6 +16,7 @@ class MonthlyGoalsPlugin(WillPlugin):
         self.say_goals()
 
     @respond_to("^(?:What are the )?(?:monthly )?goals")
+    """what are the monthly goals?: Posts the monthly goals."""
     def respond_to_goals_question(self, message):
         self.say_goals(message=message)
 

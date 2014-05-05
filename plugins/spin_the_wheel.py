@@ -36,6 +36,7 @@ class SpinTheWheelPlugin(WillPlugin):
 
     @respond_to("^spin the wheel")
     def spin_the_wheel(self, message):
+        """spin the wheel: Gives you something random to do."""
         options = [
             "call an old friend",
             "go for a walk",

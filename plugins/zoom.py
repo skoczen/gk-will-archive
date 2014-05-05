@@ -15,6 +15,7 @@ class ZoomPlugin(WillPlugin):
 
     @respond_to("^zoom", multiline=True)
     def zoom(self, message):
+        """zoom: Posts a link to a zoom chat"""
         zoom_urls = self.load("zoom_urls", {})
         zoom_url = zoom_urls.get(message.sender.nick, None)
 
