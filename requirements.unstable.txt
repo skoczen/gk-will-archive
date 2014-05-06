@@ -1,4 +1,4 @@
 boto
-will>=0.4.5
+will>=0.4.6
 github3.py
 pyyaml

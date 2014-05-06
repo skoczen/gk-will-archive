@@ -4,16 +4,14 @@ from will.decorators import respond_to, periodic, hear, randomly, route, rendere
 
 class DeployedPlugin(WillPlugin):
 
-    @route("/api/circleci/deployed/")
+    @route("/api/circleci/deployed/", method="POST")
     def say_listener(self):
-        print self.request
-        print self.request.json
         # Options: https://circleci.com/docs/api#build
         assert self.request.json and "payload" in self.request.json
         payload = self.request.json["payload"]
-        print payload
-        if ["branch"] in payload and payload["branch"] == "master":
-            message = "%(project_name)s has been <a href='%(build_url)s'>deployed</a>. (%(subject)s)" % payload
+        if "branch" in payload and payload["branch"] == "master":
+            payload["project_name"] = payload["reponame"].title()
+            message = "%(project_name)s has been <a href='%(build_url)s'>deployed</a>. <i>%(subject)s</i>" % payload
             self.say(message, html=True)
 
         return "OK"
