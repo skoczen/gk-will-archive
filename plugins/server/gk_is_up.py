@@ -41,6 +41,10 @@ class UptimePlugin(WillPlugin):
     def correlationbot_is_up(self):
         self._verify_url("http://correlationbot.com")
 
+    @periodic(second='5')
+    def usebootstyle_is_up(self):
+        self._verify_url("http://usebootstyle.com")
+
     @respond_to("^add (?P<email>.*) to the on fire list", multiline=True)
     def add_to_fire_list(self, message, email=""):
         on_fire_list = self.load("on_fire_list", [])

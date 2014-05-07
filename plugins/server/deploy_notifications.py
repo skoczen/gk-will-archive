@@ -1,17 +1,29 @@
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
 
+SITE_BRANCH_MAPPINGS = {
+    "gk-marketing": "http://greenkahuna.com",
+    "bootstyle": "http://usebootstyle.com",
+    "scrapbin": "http://scrapbin.com",
+    "our-will": "http://will.greenkahuna.com",
+    "correlationbot": "http://correlationbot.com",
+    "gk-skunkworks": "http://skunkworks.greenkahuna.com",
+}
+
 
 class DeployedPlugin(WillPlugin):
 
     @route("/api/circleci/deployed/", method="POST")
-    def say_listener(self):
+    def deploy_notification(self):
         # Options: https://circleci.com/docs/api#build
         assert self.request.json and "payload" in self.request.json
         payload = self.request.json["payload"]
         if "branch" in payload and payload["branch"] == "master":
             payload["project_name"] = payload["reponame"].title()
-            message = "%(project_name)s has been <a href='%(build_url)s'>deployed</a>. <i>%(subject)s</i>" % payload
+            payload["project_url"] = None
+            if payload["reponame"] in SITE_BRANCH_MAPPINGS:
+                payload["project_url"] = SITE_BRANCH_MAPPINGS[payload["reponame"]]
+            message = rendered_template("deploy_notification.html", context=payload)
             self.say(message, html=True)
 
         return "OK"
