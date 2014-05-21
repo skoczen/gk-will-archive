@@ -18,12 +18,16 @@ class DeployedPlugin(WillPlugin):
         # Options: https://circleci.com/docs/api#build
         assert self.request.json and "payload" in self.request.json
         payload = self.request.json["payload"]
+        print payload
         if "branch" in payload and payload["branch"] == "master":
             payload["project_name"] = payload["reponame"].title()
             payload["project_url"] = None
             if payload["reponame"] in SITE_BRANCH_MAPPINGS:
                 payload["project_url"] = SITE_BRANCH_MAPPINGS[payload["reponame"]]
             message = rendered_template("deploy_notification.html", context=payload)
-            self.say(message, html=True)
+            color = "green"
+            if payload["outcome"] != "success":
+                color = "red"
+            self.say(message, html=True, color=color)
 
         return "OK"
