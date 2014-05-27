@@ -23,6 +23,6 @@ class ContactsPlugin(WillPlugin):
             "contacts": contacts,
         }
         contact_html = rendered_template("contact_info.html", context)
-        self.say(contact_html)
+        self.say(contact_html, message=message)
 
         
