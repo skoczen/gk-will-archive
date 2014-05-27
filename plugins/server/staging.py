@@ -124,7 +124,10 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
             "no_stacks": self.stacks == {}
         }
         servers_html = rendered_template("active_staging_server_reminder.html", context)
-        self.say(servers_html, html=True)
+        color = "green"
+        if self.stacks != {}:
+            color = "red"
+        self.say(servers_html, html=True, color=color)
 
     @route("/deploy-log/<stack_name>")
     @rendered_template("deploy_log.html")
