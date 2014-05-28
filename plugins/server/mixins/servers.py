@@ -458,7 +458,7 @@ StrictHostKeyChecking no
                     other_cached_config = dict(other_app.config.data)
                     for k in self.stack.deploy_config["heroku"]["cloned_config"][app]:
                         self.add_to_saved_output(" - %s" % k)
-                        if (k not in cached_config or 
+                        if ((k not in cached_config and k in other_cached_config) or 
                             (k in other_cached_config and cached_config[k] != other_cached_config[k])):
                             print "%s=%s" % (k, other_cached_config[k])
                             self.app.config[k] = other_cached_config[k]
