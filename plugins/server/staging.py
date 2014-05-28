@@ -129,6 +129,17 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
             color = "red"
         self.say(servers_html, html=True, color=color)
 
+    @periodic(hour='18', minute='0', second='0', day_of_week="mon-fri")
+    def seriously_remind_staging_servers(self):
+        if self.stacks != {}:
+            context = {
+                "stacks": self.stacks,
+                "no_stacks": self.stacks == {}
+            }
+            servers_html = rendered_template("active_staging_server_reminder.html", context)
+            self.say(servers_html, html=True, color="red")
+
+
     @route("/deploy-log/<stack_name>")
     @rendered_template("deploy_log.html")
     def show_deploy_log(self, stack_name):
