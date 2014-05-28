@@ -18,5 +18,5 @@ redis==2.9.1
 requests==2.2.1
 sleekxmpp==1.2.4
 uritemplate.py==0.3.0
-will==0.4.8
+will==0.4.9
 wsgiref==0.1.2
