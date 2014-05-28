@@ -6,12 +6,14 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
 
     @respond_to("(?:refresh|update) (?:repo|branch|github) info")
     def refresh_all_info(self, message):
+        """update github info: refreshes the github branches and deploy.ymls"""
         self.say("Sure. One minute...", message=message)
         self.refresh_all_cached_github_info()
         self.say("All github branch and repo info refreshed.", message=message)
 
     @respond_to("(?:what branches are available for staging\?|(?:list|show) deployable branches)")
     def available_branches(self, message):
+        """list deployable branches: list all the branches that can be deployed"""
         print "available_branches"
         repos = self.get_github_deployable_repos()
         context = {"repos": repos}
@@ -20,7 +22,7 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
 
     @respond_to("(?:^what branches do we have open\?|^(?:list|show) (?:all )?branches)")
     def all_branches(self, message):
-        print "all_branches"
+        """list all branches: list all branches on repos you can see"""
         repos = self.get_github_all_repos()
         context = {"repos": repos}
         branches_html = rendered_template("available_branches.html", context)
@@ -28,12 +30,14 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
     
     @respond_to("(?:^what (?:staging )?stacks (?:do we have|are there)\?|^list stacks|^stacks|^staged)")
     def list_stacks(self, message):
+        """list stacks: list all staging stacks"""
         context = {"stacks": self.stacks}
         branches_html = rendered_template("active_staging_stacks.html", context)
         self.say(branches_html, message=message, html=True)
     
     @respond_to("^(stage|(?:new |create a?)(?:staging )?stack for) (?P<branch_name>.*)")
     def create_stack(self, message, branch_name=None):
+        """new stack for ____: create a new staging stack for branch ____"""
         if not branch_name:
             self.say("You didn't say which branch to stage.", message=message)
 
@@ -58,6 +62,7 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
 
     @respond_to("^(?P<force>force )?redeploy (?P<code_only>code to )?(?P<branch_or_stack_name>.*)")
     def redeploy(self, message, force=False, code_only=False, branch_or_stack_name=None):
+        """redeploy ____: redeploy the stack named ____"""
         if code_only is not False:
             code_only = True
         if not branch_or_stack_name:
@@ -103,8 +108,9 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
                 self.say("@%s Redeployed %s on %s. %s" % (message.sender.nick, branch.name, stack.name, stack.url), message=message)
 
     
-    @respond_to("^destroy stack (?P<stack_name>.*)")
+    @respond_to("^(destroy stack|unstage|tear ?down) (?P<stack_name>.*)")
     def destroy_staging(self, message, stack_name=None):
+        """unstage ____: tear down the stack named ____"""
         if not stack_name:
             self.say("You didn't say which stack to destroy.", message=message)
         else:
