@@ -1,4 +1,6 @@
 boto
-will>=0.4.10
+# will>=0.4.10
+git+https://github.com/greenkahuna/will.git@feature/config-based-setup
+
 github3.py
 pyyaml

@@ -1,7 +1,7 @@
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
 from will import settings
-from plugins.server.mixins.servers import BIGGEST_FISH_NAMES, STACKS_KEY
+from plugins.devops.mixins.servers import BIGGEST_FISH_NAMES, STACKS_KEY
 
 class CleanAWSBucketsPlugin(WillPlugin):
 

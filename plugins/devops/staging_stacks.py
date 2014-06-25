@@ -1,6 +1,6 @@
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
-from plugins.server.mixins import ServersMixin, GithubMixin
+from mixins import ServersMixin, GithubMixin
 
 class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
 

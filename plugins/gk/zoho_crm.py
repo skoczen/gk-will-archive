@@ -1,7 +1,6 @@
 import requests, json
 import xml.etree.ElementTree as ET
 from string import split, join, lower
-from will.settings import WILL_ZOHO_CRM_TOKEN
 from will.plugin import WillPlugin
 from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
 
@@ -29,6 +28,7 @@ class ZohoCRMPlugin(WillPlugin):
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
     def search(self, message, module, query):
         """search zoho ___ for ___: Look in zoho's ___ contact info for ___."""
+        self.verify_setting_exists("WILL_ZOHO_CRM_TOKEN", "No WILL_ZOHO_CRM_TOKEN found!")
         self.say("Alright, I'm on it...", message=message)
 
         accounts_words = ['accounts', 'businesses', 'companies']
