@@ -24,5 +24,5 @@ redis==2.9.1
 requests==2.2.1
 sleekxmpp==1.2.5
 uritemplate.py==0.3.0
-will==0.5.0
+git+https://github.com/greenkahuna/will.git@feature/config-based-setup
 wsgiref==0.1.2
