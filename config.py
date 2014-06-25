@@ -112,9 +112,12 @@ ADMINS = [
 # GK settings
 # ------------------------------------------------------------------------------------
 
-GOLD_STAR_URL = "https://gk-will.s3.amazonaws.com/Gold-Star.jpg"
-MAINTENANCE_PAGE_URL = "https://gk-maintenance.s3.amazonaws.com/maintenance.html"
+# Deploy
 DEPLOY_PREFIX = "gk-"
 GITHUB_ORGANIZATION_NAME = "greenkahuna"
+
+# Urls
+GOLD_STAR_URL = "https://gk-will.s3.amazonaws.com/Gold-Star.jpg"
+MAINTENANCE_PAGE_URL = "https://gk-maintenance.s3.amazonaws.com/maintenance.html"
 HANGOUT_URL = "https://plus.google.com/hangouts/_/event/ceggfjm3q3jn8ktan7k861hal9o?authuser=0&hl=en&hcb=0&lm1=1380301029308&hs=26&ssc=WyIiLDAsbnVsbCxudWxsLG51bGwsW10sbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLDI2LG51bGwsbnVsbCxudWxsLFsxMzgwMzAxMDI5MzA4XSxudWxsLFsiZXZlbnQiLCJjZWdnZmptM3Ezam44a3RhbjdrODYxaGFsOW8iXSxbXSxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxbXSxbXSxudWxsLG51bGwsbnVsbCxbXSxudWxsLG51bGwsbnVsbCxbXV0."
 ZOOM_URL = "https://www.zoom.us/j/4502033094"
