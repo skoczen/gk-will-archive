@@ -1,11 +1,11 @@
 from will.plugin import WillPlugin
-from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_setttings
+from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_settings
 from will import settings
 from plugins.devops.mixins.servers import BIGGEST_FISH_NAMES, STACKS_KEY
 
 class CleanAWSBucketsPlugin(WillPlugin):
 
-    @require_setttings("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_DEV_BUCKET_NAME", "DEPLOY_PREFIX")
+    @require_settings("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_DEV_BUCKET_NAME", "DEPLOY_PREFIX")
     def clean_buckets(self, message=None, quiet=True):
         try:
             from boto.s3.connection import S3Connection

@@ -2,7 +2,7 @@ import requests, json
 import xml.etree.ElementTree as ET
 from string import split, join, lower
 from will.plugin import WillPlugin
-from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_setttings
+from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_settings
 
 
 class ZohoCRMPlugin(WillPlugin):
@@ -26,7 +26,7 @@ class ZohoCRMPlugin(WillPlugin):
         return response
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
-    @require_setttings("ZOHO_CRM_TOKEN")
+    @require_settings("ZOHO_CRM_TOKEN")
     def search(self, message, module, query):
         """search zoho ___ for ___: Look in zoho's ___ contact info for ___."""
         self.say("Alright, I'm on it...", message=message)

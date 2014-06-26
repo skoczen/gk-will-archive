@@ -1,10 +1,10 @@
 from will.plugin import WillPlugin
-from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_setttings
+from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_settings
 from mixins import ServersMixin, GithubMixin
 
 class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
     
-    @require_setttings("GITHUB_USERNAME","GITHUB_PASSWORD","GITHUB_ORGANIZATION_NAME",)
+    @require_settings("GITHUB_USERNAME","GITHUB_PASSWORD","GITHUB_ORGANIZATION_NAME",)
     @respond_to("(?:refresh|update) (?:repo|branch|github) info")
     def refresh_all_info(self, message):
         """update github info: refreshes the github branches and deploy.ymls"""
@@ -36,7 +36,7 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
         branches_html = rendered_template("active_staging_stacks.html", context)
         self.say(branches_html, message=message, html=True)
     
-    @require_setttings("DEPLOY_PREFIX", "URL", "HEROKU_API_KEY", 
+    @require_settings("DEPLOY_PREFIX", "URL", "HEROKU_API_KEY", 
         "HEROKU_EMAIL", "SSH", "SSH_PUB", )
     @respond_to("^(stage|(?:new |create a?)(?:staging )?stack for) (?P<branch_name>.*)")
     def create_stack(self, message, branch_name=None):
