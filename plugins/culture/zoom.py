@@ -13,7 +13,7 @@ class ZoomPlugin(WillPlugin):
         self.save("zoom_urls", zoom_urls)
         self.say("Got it.", message=message)
 
-    @respond_to("^(?Pzoom|meet|standup)")
+    @respond_to("^(?:zoom|meet|standup)")
     def zoom(self, message):
         """zoom: Posts a link to a zoom chat"""
         zoom_urls = self.load("zoom_urls", {})
