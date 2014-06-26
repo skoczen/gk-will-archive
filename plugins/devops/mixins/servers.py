@@ -99,7 +99,7 @@ class Stack(Bunch):
 
     @property
     def url_name(self):
-       return "%s%s" % (settings.WILL_DEPLOY_PREFIX, self.name.lower().replace(" ", "-"))
+       return "%s%s" % (settings.DEPLOY_PREFIX, self.name.lower().replace(" ", "-"))
 
     @property
     def url(self):
@@ -115,7 +115,7 @@ class Stack(Bunch):
 
     @property
     def deploy_log_url(self):
-        return "%s/deploy-log/%s" % (settings.WILL_URL, self.id)
+        return "%s/deploy-log/%s" % (settings.URL, self.id)
 
     @property
     def active_deploy_key(self):
@@ -125,7 +125,7 @@ class HerokuAdapter(Bunch, StorageMixin):
     def __init__(self, stack, *args, **kwargs):
         super(HerokuAdapter, self).__init__(*args, **kwargs)
         self.stack = stack
-        self.heroku = heroku.from_key(settings.WILL_HEROKU_API_KEY)
+        self.heroku = heroku.from_key(settings.HEROKU_API_KEY)
 
     def ensure_cli_auth(self):
         cli_auth_path = os.path.abspath(os.path.expanduser("~/.will_cli_auth"))
@@ -141,8 +141,8 @@ machine code.heroku.com
   login %(email)s
   password %(token)s
     """ % {
-            "email": settings.WILL_HEROKU_EMAIL,
-            "token": settings.WILL_HEROKU_API_KEY,
+            "email": settings.HEROKU_EMAIL,
+            "token": settings.HEROKU_API_KEY,
         })
             ssh_dir = os.path.abspath(os.path.expanduser("~/.ssh"))
             if not os.path.exists(ssh_dir):
@@ -159,12 +159,12 @@ StrictHostKeyChecking no
             id_rsa_path = os.path.abspath(os.path.expanduser("~/.ssh/will_id_rsa"))
             if not os.path.exists(id_rsa_path):
                 with open(id_rsa_path, 'w+') as f:
-                    f.write(settings.WILL_SSH.replace(";;", "\n"))
+                    f.write(settings.SSH.replace(";;", "\n"))
 
             id_rsa_pub_path = os.path.abspath(os.path.expanduser("~/.ssh/will_id_rsa.pub"))
             if not os.path.exists(id_rsa_pub_path):
                 with open(id_rsa_pub_path, 'w+') as f:
-                    f.write(settings.WILL_SSH_PUB)
+                    f.write(settings.SSH_PUB)
 
             self.run_command("chmod 600 will_id_rsa", cwd=ssh_dir, auth_first=False)
 
@@ -344,7 +344,7 @@ StrictHostKeyChecking no
         for c in COLLABORATOR_EMAILS:
             self.add_to_saved_output(" - %s" % c)
             if not c in self.collaborators:
-                auth_token = base64.b64encode(":%s" % (settings.WILL_HEROKU_API_KEY,))
+                auth_token = base64.b64encode(":%s" % (settings.HEROKU_API_KEY,))
                 data = {
                     "user": c,
                     "silent": "true",
@@ -562,4 +562,4 @@ class ServersMixin(object):
         return None
 
     def prefixed_name(self, name):
-        return "%s%s" % (settings.WILL_DEPLOY_PREFIX, name)
+        return "%s%s" % (settings.DEPLOY_PREFIX, name)

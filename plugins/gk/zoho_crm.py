@@ -2,7 +2,7 @@ import requests, json
 import xml.etree.ElementTree as ET
 from string import split, join, lower
 from will.plugin import WillPlugin
-from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
+from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_setttings
 
 
 class ZohoCRMPlugin(WillPlugin):
@@ -26,9 +26,9 @@ class ZohoCRMPlugin(WillPlugin):
         return response
 
     @respond_to("^search zoho (?P<module>.*) for (?P<query>.*)")
+    @require_setttings("ZOHO_CRM_TOKEN")
     def search(self, message, module, query):
         """search zoho ___ for ___: Look in zoho's ___ contact info for ___."""
-        self.verify_setting_exists("WILL_ZOHO_CRM_TOKEN", "No WILL_ZOHO_CRM_TOKEN found!")
         self.say("Alright, I'm on it...", message=message)
 
         accounts_words = ['accounts', 'businesses', 'companies']
@@ -152,7 +152,7 @@ def zoho_api_request(module, api_method, response_format='json', query=None, rec
     url = "https://crm.zoho.com/crm/private/%s/%s/%s" % (response_format, module, api_method)
 
     params = {
-        'authtoken': WILL_ZOHO_CRM_TOKEN,
+        'authtoken': settings.ZOHO_CRM_TOKEN,
         'url': url,
         'scope': 'crmapi',
         'newFormat': 1,

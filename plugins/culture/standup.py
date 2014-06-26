@@ -1,9 +1,10 @@
 from will.plugin import WillPlugin
-from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template
+from will.decorators import respond_to, periodic, hear, randomly, route, rendered_template, require_setttings
 from will import settings
 
 class StandupPlugin(WillPlugin):
 
     @periodic(hour='9', minute='0', day_of_week="mon-fri")
+    @require_setttings("ZOOM_URL")
     def standup(self):
-        self.say("@all Standup! %s" % settings.WILL_ZOOM_URL)
+        self.say("@all Standup! %s" % settings.ZOOM_URL)

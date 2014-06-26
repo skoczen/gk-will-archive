@@ -11,12 +11,12 @@ class GithubMixin(object):
 
     def get_github_api(self, force_load=False):
         if force_load or not hasattr(self, "_github_api"):
-            self._github_api = login(settings.WILL_GITHUB_USERNAME, password=settings.WILL_GITHUB_PASSWORD)
+            self._github_api = login(settings.GITHUB_USERNAME, password=settings.GITHUB_PASSWORD)
         return self._github_api
 
     def get_github_org(self, org_name=None, force_load=False):
         if not org_name:
-            org_name = settings.WILL_GITHUB_ORGANIZATION_NAME
+            org_name = settings.GITHUB_ORGANIZATION_NAME
         if force_load or not hasattr(self, "_github_org"):
             self._github_org = self.get_github_api(force_load=force_load).organization(org_name)
         return self._github_org
