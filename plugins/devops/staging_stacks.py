@@ -36,7 +36,7 @@ class StagingPlugin(WillPlugin, ServersMixin, GithubMixin):
         branches_html = rendered_template("active_staging_stacks.html", context)
         self.say(branches_html, message=message, html=True)
     
-    @require_settings("DEPLOY_PREFIX", "URL", "HEROKU_API_KEY", 
+    @require_settings("DEPLOY_PREFIX", "PUBLIC_URL", "HEROKU_API_KEY", 
         "HEROKU_EMAIL", "SSH", "SSH_PUB", )
     @respond_to("^(stage|(?:new |create a?)(?:staging )?stack for) (?P<branch_name>.*)")
     def create_stack(self, message, branch_name=None):
