@@ -16,6 +16,7 @@ class DeployedPlugin(WillPlugin):
     @route("/api/circleci/deployed/", method="POST")
     def deploy_notification(self):
         # Options: https://circleci.com/docs/api#build
+        print self.request.json
         assert self.request.json and "payload" in self.request.json
         payload = self.request.json["payload"]
         print payload
