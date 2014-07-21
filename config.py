@@ -77,11 +77,11 @@ PUBLIC_URL = "http://will.greenkahuna.com"
 # ------------------------------------------------------------------------------------
 
 # The list of rooms will should join.  Default is all rooms.
-ROOMS = ['GreenKahuna', 'Fun!']
+ROOMS = ['GreenKahuna', 'Development', 'Fun!']
 
 # The room will will talk to if the trigger is a webhook and he isn't told a specific room. 
 # Default is the first of ROOMS.
-DEFAULT_ROOM = 'GreenKahuna'
+DEFAULT_ROOM = 'Development'
 
 
 # Fully-qualified folders to look for templates in, beyond the two that 
